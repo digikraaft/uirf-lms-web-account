@@ -15,6 +15,7 @@
     "lint:fix": "npm run lint -- --fix",
     "snapshot": "fedx-scripts jest --updateSnapshot",
     "start": "fedx-scripts webpack-dev-server --progress",
+    "dev": "cross-env NODE_ENV=development MFE_CONFIG_API_URL=http://localhost:8000/api/mfe_config/v1 fedx-scripts webpack-dev-server --progress --host apps.local.openedx.io",
     "test": "TZ=UTC fedx-scripts jest --coverage --passWithNoTests"
   },
   "bugs": {
@@ -88,8 +89,17 @@
     "@openedx/frontend-build": "^14.3.3",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "14.3.1",
+    "autoprefixer": "^10.4.21",
+    "bundlewatch": "^0.4.1",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.5.0",
+    "postcss": "^8.5.3",
+    "postcss-loader": "^8.1.1",
     "react-test-renderer": "^18.3.1",
     "reactifex": "1.1.1",
-    "redux-mock-store": "1.5.5"
+    "redux-mock-store": "1.5.5",
+    "tailwindcss": "^3.4.17",
+    "webpack": "^5.99.7",
+    "webpack-cli": "^6.0.1"
   }
 }

@@ -73,12 +73,12 @@ export class DeleteAccount extends React.Component {
 
     return (
       <div>
-        <h2 className="section-heading h4 mb-3">
+        <h2 className="font-poppins text-2xl font-semibold text-black mb-3">
           {intl.formatMessage(messages['account.settings.delete.account.header'])}
         </h2>
         {
           this.props.canDeleteAccount ? (
-            <>
+            <div className="space-y-1.5 text-sm xl:text-base text-black">
               <p>{intl.formatMessage(messages['account.settings.delete.account.subheader'])}</p>
               <p>
                 {intl.formatMessage(
@@ -86,29 +86,24 @@ export class DeleteAccount extends React.Component {
                   { siteName: getConfig().SITE_NAME },
                 )}
               </p>
-              <p>
-                {intl.formatMessage(
-                  messages[deleteAccountText2MessageKey],
-                  { siteName: getConfig().SITE_NAME },
-                )}
-              </p>
+            
               <p>
                 <PrintingInstructions />
               </p>
-              <p className="text-danger h6">
+              <p className="">
                 {intl.formatMessage(
                   messages['account.settings.delete.account.text.warning'],
                   { siteName: getConfig().SITE_NAME },
                 )}
               </p>
               <p>
-                <Hyperlink destination="https://help.edx.org/edxlearner/s/topic/0TOQq0000001UdZOAU/account-basics">
+                <Hyperlink className='text-cFF0' destination="https://help.edx.org/edxlearner/s/topic/0TOQq0000001UdZOAU/account-basics">
                   {intl.formatMessage(messages['account.settings.delete.account.text.change.instead'])}
                 </Hyperlink>
               </p>
-              <p>
+              <p className='mt-4'>
                 <Button
-                  variant="outline-danger"
+                  variant="danger"
                   onClick={canDelete ? this.props.deleteAccountConfirmation : null}
                   disabled={!canDelete}
                 >
@@ -138,7 +133,7 @@ export class DeleteAccount extends React.Component {
               />
 
               <ConnectedSuccessModal status={status} onClose={this.handleFinalClose} />
-            </>
+            </div>
           ) : (
             <p>{intl.formatMessage(messages['account.settings.cannot.delete.account.text'])}</p>
           )

@@ -11,9 +11,6 @@ import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Route, Routes, Outlet } from 'react-router-dom';
 
-import Header from '@edx/frontend-component-header';
-import { FooterSlot } from '@edx/frontend-component-footer';
-
 import configureStore from './data/configureStore';
 import AccountSettingsPage, { NotFoundPage } from './account-settings';
 import IdVerificationPageSlot from './plugin-slots/IdVerificationPageSlot';
@@ -21,6 +18,7 @@ import messages from './i18n';
 
 import './index.scss';
 import Head from './head/Head';
+import Sidebar from './sidebar/Sidebar';
 
 const rootNode = createRoot(document.getElementById('root'));
 subscribe(APP_READY, () => {
@@ -30,12 +28,12 @@ subscribe(APP_READY, () => {
         <Head />
         <Routes>
           <Route element={(
-            <div className="d-flex flex-column" style={{ minHeight: '100vh' }}>
-              <Header />
-              <main className="flex-grow-1" id="main">
+            <div className="w-full h-auto min-h-screen relative">
+              {/* <Header /> */}
+              <main className="" id="main">
+                <Sidebar/>
                 <Outlet />
               </main>
-              <FooterSlot />
             </div>
         )}
           >

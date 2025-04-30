@@ -36,34 +36,42 @@ const EditableSelectField = (props) => {
     onCancel,
     onSubmit,
     onChange,
-    isEditing,
     isEditable,
-    isGrayedOut,
     intl,
     ...others
   } = props;
+
+  const [isButtonVisible, setIsButtonVisible] = React.useState(false);
+  const [inputValue, setInputValue] = React.useState(value || '');
+
   const id = `field-${name}`;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(name, new FormData(e.target).get(name));
+    onSubmit(name, inputValue);
+    setIsButtonVisible(false); // Hide buttons after successful save
   };
 
   const handleChange = (e) => {
-    onChange(name, e.target.value);
-  };
-
-  const handleEdit = () => {
-    onEdit(name);
+    const newValue = e.target.value;
+    setInputValue(newValue);
+    if (newValue !== value) {
+      setIsButtonVisible(true); // Show buttons when input is edited
+    } else {
+      setIsButtonVisible(false); // Hide buttons if input matches the original value
+    }
+    onChange(name, newValue);
   };
 
   const handleCancel = () => {
+    setInputValue(value); // Reset input to original value
+    setIsButtonVisible(false); // Hide buttons
     onCancel(name);
   };
 
   const renderEmptyLabel = () => {
     if (isEditable) {
-      return <Button variant="link" onClick={handleEdit} className="p-0">{emptyLabel}</Button>;
+      return <Button variant="link" onClick={onEdit} className="p-0">{emptyLabel}</Button>;
     }
     return <span className="text-muted">{emptyLabel}</span>;
   };
@@ -75,9 +83,7 @@ const EditableSelectField = (props) => {
     let finalValue = rawValue;
 
     if (options) {
-      // Use == instead of === to prevent issues when HTML casts numbers as strings
-      // eslint-disable-next-line eqeqeq
-      const selectedOption = options.find(option => option.value == rawValue);
+      const selectedOption = options.find(option => option.value == rawValue); // eslint-disable-line eqeqeq
       if (selectedOption) {
         finalValue = selectedOption.label;
       }
@@ -90,17 +96,8 @@ const EditableSelectField = (props) => {
     return finalValue;
   };
 
-  const renderConfirmationMessage = () => {
-    if (!confirmationMessageDefinition || !confirmationValue) {
-      return null;
-    }
-    return intl.formatMessage(confirmationMessageDefinition, {
-      value: confirmationValue,
-    });
-  };
   const selectOptions = options.map((option) => {
     if (option.group) {
-      // If the option has a 'group' property, it represents an element with sub-options.
       return (
         <optgroup label={option.label} key={option.label}>
           {option.group.map((subOption) => (
@@ -123,80 +120,50 @@ const EditableSelectField = (props) => {
   });
 
   return (
-    <SwitchContent
-      expression={isEditing ? 'editing' : 'default'}
-      cases={{
-        editing: (
-          <>
-            <form onSubmit={handleSubmit}>
-              <Form.Group
-                controlId={id}
-                isInvalid={error != null}
-              >
-                <Form.Label size="sm" className="h6 d-block" htmlFor={id}>{label}</Form.Label>
-                <Form.Control
-                  data-hj-suppress
-                  name={name}
-                  id={id}
-                  type={type}
-                  as={type}
-                  value={value}
-                  onChange={handleChange}
-                  {...others}
-                >
-                  {options.length > 0 && selectOptions}
-                </Form.Control>
-                {!!helpText && <Form.Text>{helpText}</Form.Text>}
-                {error != null && <Form.Control.Feedback>{error}</Form.Control.Feedback>}
-                {others.children}
-              </Form.Group>
-              <p>
-                <StatefulButton
-                  type="submit"
-                  className="mr-2"
-                  state={saveState}
-                  labels={{
-                    default: intl.formatMessage(messages['account.settings.editable.field.action.save']),
-                  }}
-                  onClick={(e) => {
-                    // Swallow clicks if the state is pending.
-                    // We do this instead of disabling the button to prevent
-                    // it from losing focus (disabled elements cannot have focus).
-                    // Disabling it would causes upstream issues in focus management.
-                    // Swallowing the onSubmit event on the form would be better, but
-                    // we would have to add that logic for every field given our
-                    // current structure of the application.
-                    if (saveState === 'pending') { e.preventDefault(); }
-                  }}
-                  disabledStates={[]}
-                />
-                <Button
-                  variant="outline-primary"
-                  onClick={handleCancel}
-                >
-                  {intl.formatMessage(messages['account.settings.editable.field.action.cancel'])}
-                </Button>
-              </p>
-            </form>
-            {['name', 'verified_name'].includes(name) && <CertificatePreference fieldName={name} />}
-          </>
-        ),
-        default: (
-          <div className="form-group">
-            <div className="d-flex align-items-start">
-              <h6 aria-level="3">{label}</h6>
-              {isEditable ? (
-                <Button variant="link" onClick={handleEdit} className="ml-3">
-                  <FontAwesomeIcon className="mr-1" icon={faPencilAlt} />{intl.formatMessage(messages['account.settings.editable.field.action.edit'])}
-                </Button>
-              ) : null}
-            </div>
-            <p data-hj-suppress className={isGrayedOut ? 'grayed-out' : null}>{renderValue(value)}</p>
-            <p className="small text-muted mt-n2">{renderConfirmationMessage() || helpText}</p>
+    <div className="form">
+      <form onSubmit={handleSubmit}>
+        <div className={`relative ${error ? 'is-invalid' : ''}`}>
+          <label htmlFor={id} className="text-sm font-medium text-black">
+            {label}
+          </label>
+          <select
+            className="w-full outline-none border border-cFF0 focus:border-cFF0 focus:ring-1 focus:ring-cFF0 px-2 py-2 rounded text-sm"
+            name={name}
+            id={id}
+            value={inputValue}
+            onChange={handleChange}
+            {...others}
+          >
+            {options.length > 0 && selectOptions}
+          </select>
+          {!!helpText && <small className="form-text text-muted">{helpText}</small>}
+          {error && <div className="invalid-feedback">{error}</div>}
+          {others.children}
+        </div>
+        {isButtonVisible && (
+          <div className="mt-3">
+            <StatefulButton
+              type="submit"
+              className="mr-2 bg-cFF0 text-white border-none outline-none hover:bg-cFF0 hover:bg-opacity-85"
+              state={saveState}
+              labels={{
+                default: intl.formatMessage(messages['account.settings.editable.field.action.save']),
+              }}
+              onClick={(e) => {
+                if (saveState === 'pending') {
+                  e.preventDefault();
+                }
+              }}
+              disabledStates={[]}
+            />
+            <Button variant="outline-primary" onClick={handleCancel}>
+              {intl.formatMessage(messages['account.settings.editable.field.action.cancel'])}
+            </Button>
           </div>
-        ),
-      }}
-    />
+        )}
+      </form>
+      {['name', 'verified_name'].includes(name) && <CertificatePreference fieldName={name} />}
+    </div>
   );
 };
 

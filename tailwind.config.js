@@ -1,0 +1,43 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ['./src/**/*.{html,js,jsx,ts,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        main: '#f5e3c3',
+        cF4: '#f4eee2',
+        cFF0: '#ff6f00',
+        grey: '#565656',
+        darkGrey: '#787878',
+        dim: '#6b6b6b',
+        dimBlack: '#0d1b2a',
+        c73: '#737373',
+        cE1: '#e1e1e1',
+        c25: '#252641',
+        c69: '#696984',
+        c11: '#111927',
+        c52: '#52bd95',
+        c08: '#080808',
+        cF2: '#f2e42a',
+        c28: '#28166f',
+        cEF: '#eff4ff',
+        c65: '#656565',
+        c78: '#787878',
+        cAA: '#aaaaaa',
+        c30: '#303030',
+        c8A: '#8a8a8a',
+        cF5: '#f5f5f5',
+        c2E: '#2e8760',
+        cE9: '#e9fff5',
+        cF9: '#f9403d',
+      },
+      fontFamily: {
+        inter: ['Inter', 'sans-serif'],
+        publicSans: ['Public Sans', 'sans-serif'],
+        poppins: ['Poppins', 'sans-serif'],
+        roboto: ['Roboto', 'sans-serif'],
+      },
+    },
+  },
+  plugins: [],
+};

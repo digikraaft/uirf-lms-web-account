@@ -20,9 +20,9 @@ const ResetPassword = (props) => {
           description="The password label in account settings"
         />
       </h6>
-      <p>
+      <p className='mt-2'>
         <StatefulButton
-          variant="link"
+          className="bg-cFF0 text-white border-none hover:bg-cFF0 hover:bg-opacity-85 focus:border-none"
           state={status}
           onClick={(e) => {
             // Swallow clicks if the state is pending.

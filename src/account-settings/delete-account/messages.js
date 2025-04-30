@@ -18,12 +18,12 @@ const messages = defineMessages({
   },
   'account.settings.delete.account.text.1': {
     id: 'account.settings.delete.account.text.1',
-    defaultMessage: 'Please note: Deletion of your account and personal data is permanent and cannot be undone. {siteName} will not be able to recover your account or the data that is deleted.',
+    defaultMessage: 'Please note: Deletion of your account and personal data is permanent and cannot be undone. Tutorial will not be able to recover your account or the data that is deleted. Once your account is deleted, you cannot use it to take courses on Tutorial.',
     description: 'A message in the user account deletion area',
   },
   'account.settings.delete.account.text.2': {
     id: 'account.settings.delete.account.text.2',
-    defaultMessage: 'Once your account is deleted, you cannot use it to take courses on {siteName}.',
+    defaultMessage: 'You may also lose access to verified certificates and other program credentials. You can make a copy of these for your records before proceeding with deletion',
     description: 'A message in the user account deletion area',
   },
   'account.settings.delete.account.text.2.edX': {
@@ -38,12 +38,12 @@ const messages = defineMessages({
   },
   'account.settings.delete.account.text.warning': {
     id: 'account.settings.delete.account.text.warning',
-    defaultMessage: 'Warning: Account deletion is permanent. Please read the above carefully before proceeding. This is an irreversible action, and you will no longer be able to use the same email on {siteName}.',
+    defaultMessage: 'Warning: Account deletion is permanent. Please read the above carefully before proceeding. This is an irreversible action, and you will no longer be able to use the same email on Tutorial.',
     description: 'A message in the user account deletion area',
   },
   'account.settings.delete.account.text.change.instead': {
     id: 'account.settings.delete.account.text.change.instead',
-    defaultMessage: 'Want to change your email, name, or password instead?',
+    defaultMessage: 'Do you want to change your email, username or password instead?',
     description: 'A message in the user account deletion area',
   },
   'account.settings.delete.account.button': {

@@ -33,26 +33,35 @@ const EmailField = (props) => {
     onCancel,
     onSubmit,
     onChange,
-    isEditing,
     isEditable,
     intl,
   } = props;
+
+  const [isButtonVisible, setIsButtonVisible] = React.useState(false);
+  const [inputValue, setInputValue] = React.useState(value || '');
+
   const id = `field-${name}`;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(name, new FormData(e.target).get(name));
+    onSubmit(name, inputValue);
+    setIsButtonVisible(false); // Hide buttons after successful save
   };
 
   const handleChange = (e) => {
-    onChange(name, e.target.value);
-  };
-
-  const handleEdit = () => {
-    onEdit(name);
+    const newValue = e.target.value;
+    setInputValue(newValue);
+    if (newValue !== value) {
+      setIsButtonVisible(true); // Show buttons when input is edited
+    } else {
+      setIsButtonVisible(false); // Hide buttons if input matches the original value
+    }
+    onChange(name, newValue);
   };
 
   const handleCancel = () => {
+    setInputValue(value); // Reset input to original value
+    setIsButtonVisible(false); // Hide buttons
     onCancel(name);
   };
 
@@ -73,101 +82,55 @@ const EmailField = (props) => {
     );
   };
 
-  const renderConfirmationValue = () => (
-    <span>
-      {confirmationValue}
-      <span className="ml-3 text-muted small">
-        <FormattedMessage
-          id="account.settings.email.field.confirmation.header"
-          defaultMessage="Pending confirmation"
-          description="The label next to a new pending email address"
-        />
-      </span>
-    </span>
-  );
-
   const renderEmptyLabel = () => {
     if (isEditable) {
-      return <Button variant="link" onClick={handleEdit} className="p-0">{emptyLabel}</Button>;
+      return <Button variant="link" onClick={onEdit} className="p-0">{emptyLabel}</Button>;
     }
     return <span className="text-muted">{emptyLabel}</span>;
   };
 
-  const renderValue = () => {
-    if (confirmationValue) {
-      return renderConfirmationValue();
-    }
-    return value || renderEmptyLabel();
-  };
-
   return (
-    <SwitchContent
-      expression={isEditing ? 'editing' : 'default'}
-      cases={{
-        editing: (
-          <form onSubmit={handleSubmit}>
-            <Form.Group
-              controlId={id}
-              isInvalid={error != null}
-            >
-              <Form.Label className="h6 d-block" htmlFor={id}>{label}</Form.Label>
-              <Form.Control
-                data-hj-suppress
-                name={name}
-                id={id}
-                type="email"
-                value={value}
-                onChange={handleChange}
-              />
-              {!!helpText && <Form.Text>{helpText}</Form.Text>}
-              {error != null && <Form.Control.Feedback hasIcon={false}>{error}</Form.Control.Feedback>}
-            </Form.Group>
-            <p>
-              <StatefulButton
-                type="submit"
-                className="mr-2"
-                state={saveState}
-                labels={{
-                  default: intl.formatMessage(messages['account.settings.editable.field.action.save']),
-                }}
-                onClick={(e) => {
-                  // Swallow clicks if the state is pending.
-                  // We do this instead of disabling the button to prevent
-                  // it from losing focus (disabled elements cannot have focus).
-                  // Disabling it would causes upstream issues in focus management.
-                  // Swallowing the onSubmit event on the form would be better, but
-                  // we would have to add that logic for every field given our
-                  // current structure of the application.
-                  if (saveState === 'pending') { e.preventDefault(); }
-                }}
-                disabledStates={[]}
-              />
-              <Button
-                variant="outline-primary"
-                onClick={handleCancel}
-              >
-                {intl.formatMessage(messages['account.settings.editable.field.action.cancel'])}
-              </Button>
-            </p>
-          </form>
-        ),
-        default: (
-          <div className="form-group">
-            <div className="d-flex align-items-start">
-              <h6 aria-level="3">{label}</h6>
-              {isEditable ? (
-                <Button variant="link" onClick={handleEdit} className="ml-3">
-                  <FontAwesomeIcon className="mr-1" icon={faPencilAlt} />
-                  {intl.formatMessage(messages['account.settings.editable.field.action.edit'])}
-                </Button>
-              ) : null}
-            </div>
-            <p data-hj-suppress>{renderValue()}</p>
-            {renderConfirmationMessage() || <p className="small text-muted mt-n2">{helpText}</p>}
+    <div className="form">
+      <form onSubmit={handleSubmit}>
+        <div className={`relative ${error ? 'is-invalid' : ''}`}>
+          <label htmlFor={id} className="text-sm font-medium text-black ">
+            {label}
+          </label>
+          <input
+            className="w-full outline-none border border-cFF0 focus:border-cFF0 focus:ring-1 focus:ring-cFF0 px-2 py-2 rounded text-sm"
+            name={name}
+            id={id}
+            type="email"
+            value={inputValue}
+            onChange={handleChange}
+          />
+          {!!helpText && <small className="form-text text-muted">{helpText}</small>}
+          {error && <div className="invalid-feedback">{error}</div>}
+        </div>
+        {isButtonVisible && (
+          <div className="mt-3">
+            <StatefulButton
+              type="submit"
+              className="mr-2 bg-cFF0 text-white border-none outline-none hover:bg-cFF0 hover:bg-opacity-85"
+              state={saveState}
+              labels={{
+                default: intl.formatMessage(messages['account.settings.editable.field.action.save']),
+              }}
+              onClick={(e) => {
+                if (saveState === 'pending') {
+                  e.preventDefault();
+                }
+              }}
+              disabledStates={[]}
+            />
+            <Button variant="outline-primary" onClick={handleCancel}>
+              {intl.formatMessage(messages['account.settings.editable.field.action.cancel'])}
+            </Button>
           </div>
-        ),
-      }}
-    />
+        )}
+      </form>
+      {renderConfirmationMessage()}
+    </div>
   );
 };
 
@@ -189,7 +152,6 @@ EmailField.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
-  isEditing: PropTypes.bool,
   isEditable: PropTypes.bool,
   intl: intlShape.isRequired,
 };
@@ -203,7 +165,6 @@ EmailField.defaultProps = {
   confirmationMessageDefinition: undefined,
   confirmationValue: undefined,
   helpText: undefined,
-  isEditing: false,
   isEditable: true,
 };
 
